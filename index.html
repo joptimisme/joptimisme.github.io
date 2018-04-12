@@ -179,7 +179,7 @@ only screen and ( min-resolution: 2dppx) {
 Object.keys || (Object.keys = function (s) {var k,a=[];for (k in s){a.push(k)}})
 window.requestAnimationFrame || (window.requestAnimationFrame = setTimeout)
 var webP = document.getElementById('web-p').height === 2
-var x2 = window.devicePixelRatio > 1 ? 'x2' : ''
+var x2 = window.devicePixelRatio > 1 ? 'x2/' : ''
 webP && document.body.classList.add('webp')
 document.getElementById('web-p').remove()
 
@@ -209,8 +209,8 @@ function loadImage(a) {
   requested[a.id] = true
 
   document.getElementById(a.id).innerHTML = '<picture>'
-    + '<source srcset="img/'+ a.id + x2 +'.webp" type="image/webp">'
-    + '<source srcset="img/'+ a.id + x2 +'.png" type="image/png">'
+    + '<source srcset="img/'+ x2 + a.id +'.webp" type="image/webp">'
+    + '<source srcset="img/'+ x2 + a.id +'.png" type="image/png">'
     + '<img alt="'+ a.id +'" onload="loadNext(\''+ a.id +'\')" />'
   + '</picture>'
 }
