@@ -151,27 +151,34 @@ only screen and ( min-resolution: 2dppx) {
 "use strict"
 
 Object.keys || (Object.keys = function (s) {var k,a=[];for (k in s){a.push(k)}})
-window.requestAnimationFrame || (window.requestAnimationFrame = setTimeout)
 var webP = document.getElementById('web-p').height === 2
 var x2 = window.devicePixelRatio > 1 ? 'x2/' : ''
 document.body.classList.add(webP ? 'webp' : 'png')
 document.getElementById('web-p').remove()
 
-var prev, r, mainElement
+var prev, r, mainElement, timeout
 var articlesById = {}
 var requested = {}
 var loaded = {}
 var articles = [].map.call(document.getElementsByClassName('article'),
-  function (a) {
-    var rect = a.getBoundingClientRect()
+  function (el) {
+    var rect = el.getBoundingClientRect()
 
     return {
+      el: el,
+      id: el.id,
       height: rect.height,
       top: document.documentElement.scrollTop + rect.top,
-      bottom: (document.documentElement.scrollTop + rect.top) + rect.height,
-      id: a.id
+      bottom: (document.documentElement.scrollTop + rect.top) + rect.height
     }
   })
+
+function refreshBouding(a) {
+  var rect = a.el.getBoundingClientRect()
+  a.height = rect.height
+  a.top = document.documentElement.scrollTop + rect.top
+  a.bottom = (document.documentElement.scrollTop + rect.top) + rect.height
+}
 
 articles.forEach(function (a, i, all) {
   a.next = all[(i + 1) % all.length]
@@ -195,11 +202,10 @@ function updateHash() {
   history.replaceState({}, '', `#${mainElement.id}`)
 }
 
+function notLoaded(r) { return !loaded[r] }
 function loadNext(id) {
   loaded[id] = true
-  var imageLoading = Object.keys(requested).filter(function (r) {
-    return !loaded[r]
-  })
+  var imageLoading = Object.keys(requested).filter(notLoaded)
 
   if (imageLoading.length) return
 
@@ -214,6 +220,7 @@ function loadNext(id) {
 
 function update() {
   r = undefined
+  if (timeout) return
   var top = document.documentElement.scrollTop
   var bottom = top + innerHeight
   var inView = articles.filter(function (a) {
@@ -235,12 +242,22 @@ function update() {
   inView.forEach(loadImage)
 }
 
-function updateOnTick() { r || (r = requestAnimationFrame(update)) }
+function updateOnTick() { r || (r = setTimeout(update), 30) }
+function recalcPositions() {
+  timeout = undefined
+  console.log('refresh style')
+  articles.forEach(refreshBouding)
+  updateOnTick()
+}
+
 addEventListener('scroll', updateOnTick, false)
-addEventListener('resize', updateOnTick, false)
+addEventListener('resize', function () {
+  clearTimeout(timeout)
+  timeout = setTimeout(recalcPositions, 500)
+}, false)
 
 setTimeout(update)
-setInterval(updateHash, 100)
+setInterval(updateHash, 50)
 </script>
 </body>
 </html>
