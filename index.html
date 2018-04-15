@@ -98,6 +98,7 @@ body {
   background-size: 100%;
   background-position: top;
   padding-top: 12%;
+  padding-bottom: 6%;
   position: relative;
   top: -1px;
 }
@@ -121,10 +122,10 @@ body {
   cursor: not-allowed;
 }
 
-.article {
+a.link, .article {
   display: block;
   width: 90%;
-  background: white;
+  background-color: white;
   margin: 0 auto 20px;
   box-sizing: border-box;
   background-position: center;
@@ -138,14 +139,20 @@ body {
   position: absolute;
   top: 0;
 }
+a.link {
+  background-size: 100%;
+}
+a.link:hover {
+  background-color: #c85230;
+  background-blend-mode: screen;
+}
 
 /* ROUTING */
 .page-home #logo-text { cursor: default }
 .page-home #logo-text:hover { filter: none }
 
-.page-home .article {
-  display: inherit
-}
+.page-home .article { display: inherit }
+.page-links a.link { display: block }
 
 .page-links #links,
 .page-subscribe #subscribe,
@@ -153,6 +160,7 @@ body {
   background: rgba(0, 0, 0, 0.3)!important;
   cursor: default;
 }
+
 
 /* IMAGES */
 #footer { background-image: url('./img/footer-message.gif') }
@@ -169,6 +177,14 @@ body {
 .webp .article { background-image: url('./img/sablier.webp') }
 .webp #logo-face { background-image: url('./img/leandre-portrait.webp') }
 
+.png #lien-decroissance { background-image: url('./img/lien-decroissance.png'); }
+.png #lien-niquezvosmeres { background-image: url('./img/lien-niquezvosmeres.png'); }
+.png #lien-rodong-sinmun { background-image: url('./img/lien-rodong-sinmun.png'); }
+.webp #lien-decroissance { background-image: url('./img/lien-decroissance.webp'); }
+.webp #lien-niquezvosmeres { background-image: url('./img/lien-niquezvosmeres.webp'); }
+.webp #lien-rodong-sinmun { background-image: url('./img/lien-rodong-sinmun.webp'); }
+
+
 @media
 only screen and (-webkit-min-device-pixel-ratio: 2),
 only screen and ( min--moz-device-pixel-ratio: 2),
@@ -180,6 +196,12 @@ only screen and ( min-resolution: 2dppx) {
   #logo-slogan { background-image: url('./img/x2/joptimisme.png') }
   .png #logo-face { background-image: url('./img/x2/leandre-portrait.png') }
   .webp #logo-face { background-image: url('./img/x2/leandre-portrait.webp') }
+  .png #lien-decroissance { background-image: url('./img/x2/lien-decroissance.png'); }
+  .png #lien-niquezvosmeres { background-image: url('./img/x2/lien-niquezvosmeres.png'); }
+  .png #lien-rodong-sinmun { background-image: url('./img/x2/lien-rodong-sinmun.png'); }
+  .webp #lien-decroissance { background-image: url('./img/x2/lien-decroissance.webp'); }
+  .webp #lien-niquezvosmeres { background-image: url('./img/x2/lien-niquezvosmeres.webp'); }
+  .webp #lien-rodong-sinmun { background-image: url('./img/x2/lien-rodong-sinmun.webp'); }
 }
 
 </style>
@@ -197,9 +219,9 @@ only screen and ( min-resolution: 2dppx) {
 </div>
 <div id="container">
   <!-- ⚡ -->
-  <div class="article" id="lien-decroissance" style="padding-top: 32.5316%"></div>
-  <div class="article" id="lien-niquezvosmeres" style="padding-top: 25.2852%"></div>
-  <div class="article" id="lien-rodong-sinmun" style="padding-top: 25.2852%"></div>
+  <a class="link" href="http://www.ladecroissance.net" id="lien-decroissance" style="padding-top: 29%"></a>
+  <a class="link" href="https://niquez-vos-mere.github.io" id="lien-niquezvosmeres" style="padding-top: 22%"></a>
+  <a class="link" href="http://www.rodong.rep.kp/en/" id="lien-rodong-sinmun" style="padding-top: 22%"></a>
   <div class="article" id="Bombardement" style="padding-top: 141.8236%"></div>
   <div class="article" id="Vinci-Aeroport" style="padding-top: 76.2108%"></div>
   <div class="article" id="Diners-romantique" style="padding-top: 77.0655%"></div>
@@ -232,10 +254,11 @@ function goTo(newPage) {
   if (newPage === page) return
   document.body.classList.remove('page-'+ page)
   page = newPage
+  mainElement = undefined
   document.body.classList.add('page-'+ page)
   if (page === 'home') {
     history.replaceState({}, '', '/')
-    return recalcPositions()
+    return setTimeout(recalcPositions)
   }
   history.replaceState({}, '', '?'+ page)
 }
@@ -281,7 +304,7 @@ function loadImage(a) {
 }
 
 function updateHash() {
-  if (mainElement === prev) return
+  if (!mainElement || mainElement === prev) return
   prev = mainElement
   history.replaceState({}, '', '#'+ mainElement.id)
 }
