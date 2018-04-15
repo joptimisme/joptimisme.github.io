@@ -10,6 +10,7 @@ html, body {
   background: black;
   color: white;
 }
+
 body {
   margin: 20px auto;
   width: 100%;
@@ -25,6 +26,7 @@ body {
   position: relative;
   z-index: 1000;
 }
+
 #menu {
   text-align: right;
   padding-top: 10%;
@@ -32,20 +34,22 @@ body {
   background-repeat: no-repeat;
   background-position: 100% 82%;
 }
+
 #menu div {
   text-align: center;
   display: inline-block;
   padding-bottom: 13%;
   cursor: pointer;
+  transition: all .3s cubic-bezier(0, 1.15, 1, 1);
+  background-color: transparent;
+  mix-blend-mode: multiply;
 }
 
-#menu div:hover {
-  background: rgba(0, 0, 0, 0.3);
-}
+#menu div:hover { background-color: rgba(0, 0, 0, 0.3) }
+
 @supports (mix-blend-mode: multiply) {
   #menu div:hover {
-    background: #c65230;
-    mix-blend-mode: multiply;
+    background-color: #c65230;
   }
 }
 
@@ -64,11 +68,10 @@ body {
   right: -2.2%;
   background-position: right;
   cursor: pointer;
+  transition: all .3s cubic-bezier(0, 1.15, 1, 1);
 }
 
-#logo-text:hover {
-  filter: grayscale(1);
-}
+#logo-text:hover { filter: grayscale(1) }
 
 #logo-face {
   display: block;
@@ -122,7 +125,7 @@ body {
   cursor: not-allowed;
 }
 
-a.link, .article {
+a.link, .article, .contact {
   display: block;
   width: 90%;
   background-color: white;
@@ -133,15 +136,14 @@ a.link, .article {
   position: relative;
   display: none;
 }
-
+.contact img { width: 100% }
 .article img {
   width: 100%;
   position: absolute;
   top: 0;
 }
-a.link {
-  background-size: 100%;
-}
+
+a.link { background-size: 100% }
 a.link:hover {
   background-color: #c85230;
   background-blend-mode: screen;
@@ -152,6 +154,7 @@ a.link:hover {
 .page-home #logo-text:hover { filter: none }
 
 .page-home .article { display: inherit }
+.page-contact .contact { display: inherit }
 .page-links a.link { display: block }
 
 .page-links #links,
@@ -160,7 +163,6 @@ a.link:hover {
   background: rgba(0, 0, 0, 0.3)!important;
   cursor: default;
 }
-
 
 /* IMAGES */
 #footer { background-image: url('./img/footer-message.gif') }
@@ -183,7 +185,6 @@ a.link:hover {
 .webp #lien-decroissance { background-image: url('./img/lien-decroissance.webp'); }
 .webp #lien-niquezvosmeres { background-image: url('./img/lien-niquezvosmeres.webp'); }
 .webp #lien-rodong-sinmun { background-image: url('./img/lien-rodong-sinmun.webp'); }
-
 
 @media
 only screen and (-webkit-min-device-pixel-ratio: 2),
@@ -218,10 +219,14 @@ only screen and ( min-resolution: 2dppx) {
   <div id="logo-face"></div>
 </div>
 <div id="container">
-  <!-- ⚡ -->
+  <div class="contact">
+    <a id="mail-link" href="mailto:nospam@inbox.ru"><img src="/img/mail.gif"></img></a>
+    <img src="/img/poste.gif"></img>
+  </div>
   <a class="link" href="http://www.ladecroissance.net" id="lien-decroissance" style="padding-top: 29%"></a>
   <a class="link" href="https://niquez-vos-mere.github.io" id="lien-niquezvosmeres" style="padding-top: 22%"></a>
   <a class="link" href="http://www.rodong.rep.kp/en/" id="lien-rodong-sinmun" style="padding-top: 22%"></a>
+  <!-- ⚡ -->
   <div class="article" id="Bombardement" style="padding-top: 141.8236%"></div>
   <div class="article" id="Vinci-Aeroport" style="padding-top: 76.2108%"></div>
   <div class="article" id="Diners-romantique" style="padding-top: 77.0655%"></div>
@@ -246,6 +251,8 @@ var webP = document.getElementById('web-p').height === 2
 var page = window.location.search.slice(1) || 'home'
 var x2 = window.devicePixelRatio > 1 ? 'x2/' : ''
 document.getElementById('web-p').remove()
+var mailLink = document.getElementById('mail-link')
+mailLink.href = mailLink.href.replace('nospam', 'lemo')
 
 document.body.classList.add(webP ? 'webp' : 'png')
 document.body.classList.add('page-' + page)
@@ -253,9 +260,9 @@ document.body.classList.add('page-' + page)
 function goTo(newPage) {
   if (newPage === page) return
   document.body.classList.remove('page-'+ page)
+  document.body.classList.add('page-'+ newPage)
   page = newPage
   mainElement = undefined
-  document.body.classList.add('page-'+ page)
   if (page === 'home') {
     history.replaceState({}, '', '/')
     return setTimeout(recalcPositions)
