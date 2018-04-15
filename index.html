@@ -125,7 +125,7 @@ body {
   cursor: not-allowed;
 }
 
-a.link, .article, .contact {
+a.link, .article, .contact, .subscribe {
   display: block;
   width: 90%;
   background-color: white;
@@ -136,7 +136,7 @@ a.link, .article, .contact {
   position: relative;
   display: none;
 }
-.contact img { width: 100% }
+.contact img, .subscribe img { width: 100% }
 .article img {
   width: 100%;
   position: absolute;
@@ -155,6 +155,7 @@ a.link:hover {
 
 .page-home .article { display: inherit }
 .page-contact .contact { display: inherit }
+.page-subscribe .subscribe { display: inherit }
 .page-links a.link { display: block }
 
 .page-links #links,
@@ -219,6 +220,10 @@ only screen and ( min-resolution: 2dppx) {
   <div id="logo-face"></div>
 </div>
 <div id="container">
+  <div class="subscribe">
+    <img src="/img/s-abonner.gif"></img>
+    <img width="702" height="235" src="/img/grand-prix.gif"></img>
+  </div>
   <div class="contact">
     <a id="mail-link" href="mailto:nospam@inbox.ru"><img src="/img/mail.gif"></img></a>
     <img src="/img/poste.gif"></img>
