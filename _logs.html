@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>redirect to logs</title>
+  <script type="text/javascript">
+    fetch('/')
+      .then(res => res.text())
+      .then(html => {
+        const [ , project, id ] = html.split(/https:\/\/(.+)-(.+)\.now\.sh\//)
+        location.replace(`https://zeit.co/joptimisme/${project}/${id}/logs`)
+      })
+  </script>
+</head>
+<body></body>
+</html>
