@@ -6,7 +6,7 @@
     fetch('/')
       .then(res => res.text())
       .then(html => {
-        const [ , project, id ] = html.split(/https:\/\/(.+)-(.+)\.now\.sh\//)
+        const [ , project, id ] = html.split(/https:\/\/(.+)-(.+)\.now\.sh/)
         location.replace(`https://zeit.co/joptimisme/${project}/${id}/logs`)
       })
   </script>
