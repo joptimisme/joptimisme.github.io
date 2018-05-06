@@ -364,7 +364,7 @@ subBox.addEventListener('submit', function (event) {
   var email = document.getElementById('email').value
   var req = new XMLHttpRequest()
   req.onreadystatechange = readystatehandler
-  req.open('GET', api +'?email='+ email, true)
+  req.open('GET', api +'/sub?email='+ email, true)
   req.send(null)
 })
 
