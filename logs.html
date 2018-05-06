@@ -3,7 +3,7 @@
 <head>
   <title>redirect to logs</title>
   <script type="text/javascript">
-    fetch('/')
+    fetch(`/?${Date.now()}`)
       .then(res => res.text())
       .then(html => {
         const [ , project, id ] = html.split(/https:\/\/(.+)-(.+)\.now\.sh/)
