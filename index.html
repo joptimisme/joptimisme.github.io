@@ -316,9 +316,15 @@ var webP = document.getElementById('web-p').height === 2
 var page = window.location.search.slice(1) || 'home'
 var x2 = window.devicePixelRatio > 1 ? 'x2/' : ''
 var api = 'https://ci-iaiohfqfxo.now.sh'
-document.getElementById('web-p').remove()
 var mailLink = document.getElementById('mail-link')
 var subBox = document.getElementById('sub-box')
+var prev, r, mainElement, timeout
+var articlesById = {}
+var requested = {}
+var loaded = {}
+
+document.getElementById('web-p').remove()
+
 mailLink.href = mailLink.href.replace('nospam', 'lemo')
 
 document.body.classList.add(webP ? 'webp' : 'png')
@@ -368,10 +374,6 @@ subBox.addEventListener('submit', function (event) {
   req.send(null)
 })
 
-var prev, r, mainElement, timeout
-var articlesById = {}
-var requested = {}
-var loaded = {}
 var articles = [].map.call(document.getElementsByClassName('article'),
   function (el) {
     var rect = el.getBoundingClientRect()
@@ -454,7 +456,7 @@ function update() {
   inView.forEach(loadImage)
 }
 
-function updateOnTick() { r || (r = setTimeout(update), 30) }
+function updateOnTick() { r || (r = setTimeout(update, 80)) }
 function recalcPositions() {
   timeout = undefined
   console.log('refresh style')
@@ -469,7 +471,7 @@ addEventListener('resize', function () {
 }, false)
 
 setTimeout(update)
-setInterval(updateHash, 50)
+setInterval(updateHash, 80)
 </script>
 </body>
 </html>
