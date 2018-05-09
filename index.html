@@ -288,8 +288,8 @@ input[type="email"] {
   <a class="link" target="_blank" href="https://niquez-vos-meres.github.io" id="lien-niquezvosmeres" style="padding-top: 22%"></a>
   <a class="link" target="_blank" href="http://www.rodong.rep.kp/en/" id="lien-rodong-sinmun" style="padding-top: 22%"></a>
   <!-- ⚡ -->
-  <div class="article" id="Espace" --data-date="1525684315781" style="padding-top: 83.1589%"></div>
-  <div class="article" id="Victime" --data-date="1525684290987" style="padding-top: 76.2000%"></div>
+  <!-- <div class="article" id="Espace" --data-date="1525684315781" style="padding-top: 83.1589%"></div> -->
+  <!-- <div class="article" id="Victime" --data-date="1525684290987" style="padding-top: 76.2000%"></div> -->
   <div class="article" id="4G" --data-date="1525684114019" style="padding-top: 88.6734%"></div>
   <div class="article" id="Perdu" --data-date="1525684114019" style="padding-top: 83.4669%"></div>
   <div class="article" id="Marche" --data-date="1525626507990" style="padding-top: 75.6453%"></div>
@@ -335,6 +335,16 @@ mailLink.href = mailLink.href.replace('nospam', 'lemo')
 document.body.classList.add(webP ? 'webp' : 'png')
 document.body.classList.add('page-'+ page)
 
+function get(url, cb) {
+  var req = new XMLHttpRequest()
+  req.onreadystatechange = function () {
+    this.readyState === XMLHttpRequest.DONE && cb.call(this, this)
+  }
+  req.open('GET', url, true)
+  req.send(null)
+  return req
+}
+
 function scrollTop() {
   return (document.scrollingElement || document.documentElement).scrollTop
 }
@@ -352,18 +362,17 @@ function goTo(newPage) {
   history.replaceState({}, '', '?'+ page)
 }
 
-function readystatehandler(event) {
-  if (this.readyState !== XMLHttpRequest.DONE) return
-  if (this.status !== 200) {
+function readystatehandler(req) {
+  if (req.status !== 200) {
     subBox.style.backgroundImage = "url('./img/s-abonner.gif')"
     subBox.style.backgroundSize = '100%'
     forEach.call(subBox.getElementsByTagName('input'), function (input) {
       input.disabled = false
       input.style.visibility = ''
     })
-    return console.error(this.status, this.statusText)
+    return console.error(req.status, req.statusText)
   }
-  console.log(this.responseText)
+  console.log(req.responseText)
   subBox.style.backgroundImage = "url('./img/confirmation-abonnement.gif')"
   subBox.style.backgroundSize = '70%'
 }
@@ -372,15 +381,12 @@ subBox.addEventListener('submit', function (event) {
   event.preventDefault()
   subBox.style.backgroundImage = "url('./img/sablier.gif')"
   subBox.style.backgroundSize = '10%'
-  ;[].forEach.call(subBox.getElementsByTagName('input'), function (input) {
+  forEach.call(subBox.getElementsByTagName('input'), function (input) {
     input.disabled = true
     input.style.visibility = 'hidden'
   })
   var email = document.getElementById('email').value
-  var req = new XMLHttpRequest()
-  req.onreadystatechange = readystatehandler
-  req.open('GET', api +'/sub?email='+ email, true)
-  req.send(null)
+  get(api +'/sub?email='+ email, readystatehandler)
 })
 
 var articles = map.call(document.getElementsByClassName('article'),
@@ -393,10 +399,33 @@ function refreshBouding(a) {
   a.bottom = (scrollTop() + rect.top) + rect.height
 }
 
-articles.forEach(function (a, i, all) {
+function processArticle(a, i, all) {
   refreshBouding(a)
   a.next = all[(i + 1) % all.length]
   articlesById[a.id] = a
+}
+
+articles.forEach(processArticle)
+
+get('https://joptimisme.github.io/?'+ +(new Date), function (req) {
+  var parser = new DOMParser()
+  var doc = parser.parseFromString(req.responseText, 'text/html')
+  var container = document.getElementById('container')
+  var fresh = map
+    .call(doc.getElementsByClassName('article'), function (el) { return el })
+    .filter(function (el) { return !articlesById[el.id] })
+    .reverse()
+
+  fresh.forEach(function (el) {
+    container.prepend(el)
+    articles.unshift({ el: el, id: el.id })
+  })
+  articles.forEach(processArticle)
+  recalcPositions()
+  var apiId = doc.getElementsByTagName('script')[0]
+    .innerText.split(/api = 'https:\/\/([^.]+)\.now\.sh'/)[1]
+
+  apiId && (api = 'https://'+ apiId +'.now.sh')
 })
 
 function loadImage(a) {
