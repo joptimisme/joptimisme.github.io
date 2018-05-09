@@ -335,6 +335,10 @@ mailLink.href = mailLink.href.replace('nospam', 'lemo')
 document.body.classList.add(webP ? 'webp' : 'png')
 document.body.classList.add('page-'+ page)
 
+function scrollTop() {
+  return (document.scrollingElement || document.documentElement).scrollTop
+}
+
 function goTo(newPage) {
   if (newPage === page) return
   document.body.classList.remove('page-'+ page)
@@ -380,26 +384,17 @@ subBox.addEventListener('submit', function (event) {
 })
 
 var articles = map.call(document.getElementsByClassName('article'),
-  function (el) {
-    var rect = el.getBoundingClientRect()
-
-    return {
-      el: el,
-      id: el.id,
-      height: rect.height,
-      top: document.documentElement.scrollTop + rect.top,
-      bottom: (document.documentElement.scrollTop + rect.top) + rect.height
-    }
-  })
+  function (el) { return { el: el, id: el.id } })
 
 function refreshBouding(a) {
   var rect = a.el.getBoundingClientRect()
   a.height = rect.height
-  a.top = document.documentElement.scrollTop + rect.top
-  a.bottom = (document.documentElement.scrollTop + rect.top) + rect.height
+  a.top = scrollTop() + rect.top
+  a.bottom = (scrollTop() + rect.top) + rect.height
 }
 
 articles.forEach(function (a, i, all) {
+  refreshBouding(a)
   a.next = all[(i + 1) % all.length]
   articlesById[a.id] = a
 })
@@ -425,14 +420,12 @@ function notLoaded(r) { return !loaded[r] }
 function loadNext(id) {
   loaded[id] = true
   var imageLoading = Object.keys(requested).filter(notLoaded)
-
   if (imageLoading.length) return
 
   var next = articlesById[id].next
   while (loaded[next.id]) {
-    if (next.id === id) return console.log('all loaded')
+    if (next.id === id) return
     next = next.next
-    console.log('testing', next.id)
   }
   loadImage(next)
 }
@@ -440,14 +433,13 @@ function loadNext(id) {
 function update() {
   r = undefined
   if (timeout) return
-  var top = (document.scrollingElement || document.documentElement).scrollTop
+  var top = scrollTop()
   var bottom = top + innerHeight
   var inView = articles.filter(function (a) {
     return a.bottom > top && a.top < bottom
   })
 
   var [ first, second ] = inView
-
   if (!second) {
     mainElement = first
   } else if (first.top >= top) {
@@ -464,7 +456,6 @@ function update() {
 function updateOnTick() { r || (r = setTimeout(update, 80)) }
 function recalcPositions() {
   timeout = undefined
-  console.log('refresh style')
   articles.forEach(refreshBouding)
   updateOnTick()
 }
