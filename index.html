@@ -435,7 +435,7 @@ function loadNext(id) {
 function update() {
   r = undefined
   if (timeout) return
-  var top = document.documentElement.scrollTop
+  var top = (document.scrollingElement || document.documentElement).scrollTop
   var bottom = top + innerHeight
   var inView = articles.filter(function (a) {
     return a.bottom > top && a.top < bottom
