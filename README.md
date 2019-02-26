@@ -1,2 +1,2 @@
 # joptimisme.github.io
-Les Dessins de léandre
+Les dessins de Léandre
