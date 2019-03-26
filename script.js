@@ -55,10 +55,5 @@ get('https://joptimisme.github.io/?'+ +(new Date), function (req) {
 
   fresh.length && articles.forEach(processArticle)
   fresh.length && recalcPositions()
-
-  var apiId = doc.getElementsByTagName('script')[0]
-    .innerText.split(/api = 'https:\/\/([^.]+)\.now\.sh'/)[1]
-
-  apiId && (api = 'https://'+ apiId +'.now.sh')
 })
 
