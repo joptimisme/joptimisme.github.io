@@ -373,7 +373,9 @@ input[type="email"] {
 "use strict"
 
 Object.keys || (Object.keys = function (s) {var k,a=[];for (k in s){a.push(k)}})
-var prev, r, mainElement, timeout
+var articlesElements = document.getElementsByClassName('article')
+var r, timeout // requested and timeout
+var mainElement = document.getElementById(window.location.hash.slice(1)) || articlesElements[0]
 var webPEl = document.getElementById('web-p')
 var webP = webPEl.height === 2
 var page = window.location.search.slice(1) || 'home'
@@ -381,6 +383,7 @@ var x2 = window.devicePixelRatio > 1 ? 'x2/' : ''
 var api = 'https://service-kigiri.joptimisme1.now.sh'
 var articlesById = {}, requested = {}, loaded = {}
 var forEach = [].forEach, map = [].map
+var prev = mainElement
 
 webPEl.remove()
 
@@ -404,8 +407,7 @@ function goTo(newPage) {
   history.replaceState({}, '', '?'+ page)
 }
 
-var articles = map.call(document.getElementsByClassName('article'),
-  function (el) { return { el: el, id: el.id } })
+var articles = map.call(articlesElements, function (el) { return { el: el, id: el.id } })
 
 function refreshBouding(a) {
   var rect = a.el.getBoundingClientRect()
@@ -439,8 +441,9 @@ function updateHash() {
   history.replaceState({}, '', '#'+ mainElement.id)
 }
 
-function notLoaded(r) { return !loaded[r] }
+function notLoaded(req) { return !loaded[req] }
 function loadNext(id) {
+  updateOnTick()
   loaded[id] = true
   var imageLoading = Object.keys(requested).filter(notLoaded)
   if (imageLoading.length) return
@@ -489,8 +492,8 @@ addEventListener('resize', function () {
   timeout = setTimeout(recalcPositions, 500)
 }, false)
 
-setTimeout(update)
 setInterval(updateHash, 80)
+loadImage(mainElement)
 </script>
 <script type="text/javascript" src="script.js"></script>
 </body>
