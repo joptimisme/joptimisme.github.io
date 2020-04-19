@@ -79,6 +79,7 @@ const exec = async () => {
   const content = `${left}${delim}${articles.join('')}${right}`
   await gitAdd({ name: 'index.html', content })
   await execa('git', ['add', ...filesToAdd])
+  await execa('git', ['commit', '-m', `add images ${addedFiles.join(',')}`])
   await execa('git', ['push'])
   console.log('index done, All done !')
   return 'OK'
