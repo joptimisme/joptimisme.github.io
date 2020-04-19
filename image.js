@@ -61,6 +61,7 @@ const exportImage = async file => {
 }
 
 const exec = async () => {
+  await execa('git', ['pull', '-r', '--autostash'])
   const [srcFiles, img] = await Promise.all([ readdir('source'), readdir('img') ])
   const available = img.filter(f => f.endsWith('.png')).map(f => f.slice(0, -4))
   const addedFiles = srcFiles
