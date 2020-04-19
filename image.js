@@ -13,16 +13,16 @@ const imgTypes = [
   { type: 'png', handler: pngquant }
 ]
 
+const filesToAdd = []
 const gitAdd = async ({ name, content }) => {
   await writeFile(name, content, 'utf8')
-  await execa('git', ['add', name])
+  filesToAdd.push(name)
 }
 
 const buildImage = async (image, w) => {
   console.log('sharpening...')
   const sharped = sharp(image)
   const { width, height } = await sharped.metadata()
-  console.log({width, height})
   const [ buf, bufX2 ] = await Promise.all([
     sharped.resize(Math.min(width, w)).toBuffer(),
     sharped.resize(Math.min(width, w * 2)).toBuffer()
@@ -69,7 +69,7 @@ const exec = async () => {
 
   if (!addedFiles.length) return console.log('no new files')
   console.log(addedFiles.length, 'image to add...')
-  await execa('git', ['add', ...srcFiles.map(s => join('source', s))])
+  filesToAdd.push(...srcFiles.map(s => join('source', s)))
   const files = await Promise.all(addedFiles.map(exportImage))
 
   console.log('adding images to index...')
@@ -78,6 +78,7 @@ const exec = async () => {
   const articles = files.map(buildArticleHTML)
   const content = `${left}${delim}${articles.join('')}${right}`
   await gitAdd({ name: 'index.html', content })
+  await execa('git', ['add', ...filesToAdd])
   await execa('git', ['push'])
   console.log('index done, All done !')
   return 'OK'
