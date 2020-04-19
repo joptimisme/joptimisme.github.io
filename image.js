@@ -80,9 +80,12 @@ const exec = async () => {
   await gitAdd({ name: 'index.html', content })
   await execa('git', ['add', ...filesToAdd])
   await execa('git', ['commit', '-m', `add images ${addedFiles.join(',')}`])
-  await execa('git', ['push'])
-  console.log('index done, All done !')
-  return 'OK'
+  console.log('git commit and git add')
+  const push = execa('git', ['push'])
+  console.log('git push')
+  push.stdout.pipe(process.stdout)
+  await push
+  console.log('All done !')
 }
 
 exec()
