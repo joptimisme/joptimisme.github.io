@@ -1,7 +1,6 @@
 const fs = require('fs')
 const execa = require('execa')
-const crypto = require('crypto')
-const { join, parse: pathParse, basename } = require('path')
+const { join, parse: pathParse } = require('path')
 const sharp = require('sharp')
 const pngquant = require('imagemin-pngquant')()
 const webp = require('imagemin-webp')({ quality: 50 })
@@ -69,7 +68,7 @@ const exec = async () => {
 
   if (!addedFiles.length) return console.log('no new files')
   console.log(addedFiles.length, 'image to add...')
-
+  await execa('git', ['add', ...srcFiles.map(s => join('source', s))])
   const files = await Promise.all(addedFiles.map(exportImage))
 
   console.log('adding images to index...')
@@ -78,6 +77,7 @@ const exec = async () => {
   const articles = files.map(buildArticleHTML)
   const content = `${left}${delim}${articles.join('')}${right}`
   await gitAdd({ name: 'index.html', content })
+  await execa('git', ['push'])
   console.log('index done, All done !')
   return 'OK'
 }
